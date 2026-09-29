@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b6e8a"><title>GIST CAFE | SmartQueue</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#1687c9;--a:#20b8c9;--g:#f59e0b;--dark:#17212b;--muted:#64748b;--bg:#f3f9fc;--bd:#dcebf2}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--dark);line-height:1.5}
+button,input{font:inherit}button{cursor:pointer;border:0}a{text-decoration:none;color:inherit}
+.wrap{width:92%;max-width:1100px;margin:auto}
+header{background:#fff;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--bd)}
+.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-size:24px;font-weight:900;color:var(--p)}.logo span{color:var(--a)}
+
+nav{display:flex;gap:18px;font-weight:800;color:var(--muted)}nav a:hover,nav a.on{color:var(--p)}
+.btn{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;padding:11px 17px;border-radius:11px;font-weight:800;display:inline-block}
+.btn.gold{background:linear-gradient(135deg,#f5b301,#ffd447);color:#17212b}
+.btn.secondary{background:#e8f8fc;color:var(--p)}.btn.danger{background:#fee2e2;color:#b91c1c}.btn.small{padding:7px 11px;font-size:12px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:18px;padding:22px;box-shadow:0 10px 30px #155b7815;margin-bottom:18px}
+.hero{min-height:470px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:30px}
+.hero h1{font-size:clamp(38px,7vw,62px);line-height:1.03;margin:14px 0}.hero h1 span{color:var(--a)}
+
+.muted{color:var(--muted)}.center{text-align:center}
+.pill{display:inline-block;padding:7px 14px;border-radius:30px;background:#fff3c4;color:#8a6100;font-size:12px;font-weight:900}
+.big{font-size:60px;font-weight:900;color:var(--p);margin:10px 0}.big small{font-size:16px;color:var(--muted)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.stat{background:#eef8fb;border:1px solid var(--bd);border-radius:13px;padding:13px;text-align:center}
+.stat b{display:block;font-size:21px;color:var(--p)}.stat span{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.product{background:#fff;border:1px solid var(--bd);border-radius:17px;overflow:hidden;transition:.2s}.product:hover{transform:translateY(-4px);box-shadow:0 12px 26px #0b6e8a25}
+.product .icon{height:92px;background:linear-gradient(135deg,#e2f6f1,#dcecf7);display:grid;place-items:center;font-size:44px}
+.product .body{padding:13px}.product h3{font-size:15px}.price{color:var(--a);font-weight:900;font-size:18px;margin:3px 0}
+input{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;margin:6px 0 13px;outline:none}input:focus{border-color:var(--a)}
+label{font-size:12px;font-weight:800}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#eef8fb;padding:12px;border-radius:11px;margin-bottom:8px}
+.view{display:none}.err{color:#b91c1c;font-size:13px;min-height:20px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:35px}.step{text-align:center}
+.sn{width:38px;height:38px;border-radius:50%;background:var(--g);color:#17212b;display:grid;place-items:center;margin:0 auto 8px;font-weight:900}
+#toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:#17212b;color:#fff;padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;z-index:200;transition:.3s}#toast.show{opacity:1}
+footer{padding:30px 10px;text-align:center;color:var(--muted)}
+#payment{display:none;position:fixed;inset:0;background:#0009;z-index:100;align-items:center;justify-content:center;padding:15px}
+.pbox{background:#fff;width:min(440px,100%);max-height:92vh;overflow:auto;border-radius:20px;padding:22px}
+.popt{display:flex;gap:10px;margin:14px 0}.popt button{flex:1;padding:13px;border-radius:11px;background:#eef8fb;color:var(--muted);border:2px solid var(--bd);font-weight:800}.popt button.active{border-color:var(--p);color:var(--p)}
+#qrBox{text-align:center}#qrImg{display:inline-block;padding:12px;background:#fff;border:2px solid var(--bd);border-radius:14px}
+.paid{display:none;text-align:center;padding:20px}.paid .tick{width:84px;height:84px;border-radius:50%;background:#16a34a;color:#fff;font-size:48px;display:grid;place-items:center;margin:0 auto 10px;animation:pop .5s}
+@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
+#aiButton{position:fixed;right:16px;bottom:16px;width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;font-size:28px;box-shadow:0 8px 30px #0004;z-index:90}
+
+#aiWindow{display:none;position:fixed;right:16px;bottom:90px;width:min(480px,94vw);height:min(640px,78vh);background:#fff;border-radius:20px;box-shadow:0 20px 60px #0005;z-index:95;overflow:hidden;border:1px solid var(--bd)}
+#aiWindow.open{display:flex;flex-direction:column}
+.ai-h{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;padding:16px 20px;font-weight:900;font-size:19px;display:flex;align-items:center;gap:10px}
+.ai-h span{margin-left:auto;cursor:pointer;font-size:25px}
+#messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.message{max-width:90%;padding:11px 14px;border-radius:15px;background:#eef8fb;word-wrap:break-word}.message.user{align-self:flex-end;background:var(--p);color:#fff}
+.message p{margin:0 0 6px}.message ul{padding-left:20px}.message pre{background:#111827;color:#fff;padding:10px;border-radius:10px;overflow:auto;white-space:pre-wrap}
+.quick{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-top:1px solid var(--bd)}
+.quick button{white-space:nowrap;background:#fff3c4;color:#8a6100;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:800}
+.ai-in{display:flex;gap:8px;padding:12px;border-top:1px solid var(--bd)}.ai-in input{margin:0}
+.qi{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#eef8fb;border-radius:12px;margin-bottom:8px}
+@media(max-width:800px){.hero{grid-template-columns:1fr;padding:30px 0}.products{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}}
+@media(max-width:500px){nav{gap:10px;font-size:13px}.logo{font-size:19px}#aiWindow{right:8px;width:calc(100vw - 16px);height:75vh}}
+
+
+.an-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.range{display:flex;gap:6px;background:#fff;border:1px solid var(--bd);padding:5px;border-radius:14px}
+.range button,.subnav button{padding:8px 14px;border-radius:10px;background:transparent;color:var(--muted);font-weight:800;font-size:13px}
+.range button.on{background:linear-gradient(135deg,var(--p),var(--a));color:#fff}
+.subnav{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px}.subnav button{background:#fff;border:1px solid var(--bd);white-space:nowrap}.subnav button.on{color:#fff;border-color:transparent}
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{border-radius:16px;padding:16px;color:#fff;box-shadow:0 8px 22px #0002}.kpi span{font-size:12px;font-weight:800;opacity:.9}.kpi b{display:block;font-size:26px}.kpi em{font-style:normal;font-size:11px;font-weight:900}
+.ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.ins{padding:13px 14px;border-radius:14px;border-left:5px solid;font-size:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:165px;margin-top:10px}.bars div{flex:1;text-align:center;font-size:10px;color:var(--muted)}.bars i{display:block;border-radius:6px 6px 0 0;margin-bottom:4px}
+.prow{display:grid;grid-template-columns:1.4fr 1.3fr 80px 1.1fr;align-items:center;gap:10px;padding:12px;background:#eef8fb;border-radius:12px;margin-bottom:8px}.prow small{display:block;color:var(--muted)}
+.tr{background:#fff;border-radius:8px;height:10px;overflow:hidden}.tr div{height:100%}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:900;text-align:center}.badge.up{background:#dcfce7;color:#15803d}.badge.down{background:#fee2e2;color:#b91c1c}.badge.flat{background:#fef3c7;color:#b45309}
+.tbl{max-height:360px;overflow:auto;border:1px solid var(--bd);border-radius:12px}.tbl table{width:100%;border-collapse:collapse;font-size:13px}.tbl th{position:sticky;top:0;background:#1687c9;color:#fff;text-align:left;padding:10px}.tbl td{padding:9px 10px;border-top:1px solid var(--bd)}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.report{background:#f8fcfe;border:1px dashed var(--bd);border-radius:14px;padding:16px;margin-top:12px;font-size:14px}
+.anm{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted)}.legend i{display:inline-block;width:14px;height:4px;margin-right:5px;vertical-align:middle}
+@media(max-width:800px){.kg{grid-template-columns:1fr 1fr}.two,.ins-grid{grid-template-columns:1fr}.prow{grid-template-columns:1fr 1fr}}
+.queueHero{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.prediction{background:linear-gradient(135deg,#0b6e8a,#1687c9,#20b8c9);color:#fff;border-radius:20px;padding:25px;text-align:center}
+.prediction .number{font-size:62px;font-weight:900;line-height:1.1;margin:10px 0}
+.confidence{margin-top:15px;background:#ffffff25;padding:10px;border-radius:12px}
+.analysisMetric{background:#eef8fb;border:1px solid var(--bd);padding:14px;border-radius:14px}.analysisMetric b{display:block;font-size:24px;color:var(--p)}.analysisMetric small,.analysisMetric span{font-size:11px;color:var(--muted)}
+.chartBox svg{width:100%;height:auto}
+.statusShort{background:#dcfce7;color:#15803d}.statusMedium{background:#fef3c7;color:#b45309}.statusLong{background:#fee2e2;color:#b91c1c}
+.explain{border-left:5px solid var(--a);background:#eef8fb;padding:15px;border-radius:12px;margin-top:12px}
+@media(max-width:800px){.queueHero{grid-template-columns:1fr}}
+</style></head><body>
+
+<header><div class="wrap nav">
+<a href="#home" class="logo">☕ GIST <span>CAFE</span></a>
+<nav><a href="#home" id="homeLink">Home</a><a href="#login" id="loginLink">Login</a><a href="#items" id="itemsLink">Items</a><a href="#analysis" id="analysisLink">AI Analysis</a><a href="#manager" id="managerLink" style="display:none">Manager</a></nav>
+<div id="authBox"></div></div></header>
+<div id="toast"></div>
+
+<section id="home" class="view"><div class="wrap hero"><div>
+<span class="pill">☕ GIST SMARTQUEUE AI</span>
+<h1>Fresh food.<br>Less <span>waiting.</span></h1>
+<p class="muted" style="font-size:16px;margin-bottom:22px">Order food and stationery from GIST Cafe, see the live queue, get a predicted waiting time and pay with UPI QR or cash.</p>
+<a href="#items" class="btn">View Items</a> <a href="#login" class="btn secondary">Login</a></div>
+<div class="card center"><b>☕ LIVE CAFE QUEUE</b><p class="muted">Predicted waiting time</p>
+<div class="big"><span id="homeWait">0</span> <small>minutes</small></div><span id="homeStatus" class="pill">SHORT WAIT</span>
+<div class="grid3"><div class="stat"><b id="homeQueue">0</b><span>In Queue</span></div><div class="stat"><b id="homeService">3</b><span>Min / Person</span></div><div class="stat"><b id="homeConf">95%</b><span>Confidence</span></div></div>
+<p class="muted" id="homeRange" style="margin-top:12px"></p></div></div>
+<div class="wrap steps"><div class="card step"><div class="sn">1</div><b>Login</b><p class="muted">Sign in as a customer.</p></div><div class="card step"><div class="sn">2</div><b>Select Items</b><p class="muted">Food, drinks and stationery.</p></div><div class="card step"><div class="sn">3</div><b>Pay & Track</b><p class="muted">Scan QR or pay cash, then track your token.</p></div></div></section>
+
+<section id="login" class="view"><div class="wrap" style="max-width:600px;padding:40px 0"><div class="card">
+<h2 id="loginTitle">Customer Login</h2>
+<div class="tabs"><button class="btn small" id="customerTab" onclick="setMode('customer')">Customer</button><button class="btn secondary small" id="managerTab" onclick="setMode('manager')">Manager</button><button class="btn secondary small" id="registerTab" onclick="setMode('register')">Register</button></div>
+<div id="nameBox" style="display:none"><label>Full Name</label><input id="displayName" placeholder="Enter your name"></div>
+<label>Username</label><input id="username" placeholder="Enter username"><label>Password</label><input id="password" type="password" placeholder="Enter password">
+<div id="loginError" class="err"></div><button class="btn" style="width:100%" onclick="loginAction()">Continue</button></div></div></section>
+
+<section id="items" class="view"><div class="wrap" style="padding:30px 0">
+<h2>🍴 Cafe & Stationery</h2><p class="muted">Food, beverages and everything for your class.</p>
+<div class="tabs" id="cats"></div><div id="products" class="products"></div>
+<div class="card" style="margin-top:25px"><h2>🛒 Your Cart</h2><div id="cart"></div>
+<div class="row"><b>Total Amount</b><b id="cartTotal">₹0</b></div>
+<button class="btn" onclick="checkout()">Proceed to Payment</button> <button class="btn secondary" onclick="clearCart()">Clear Cart</button></div></div></section>
+
+<section id="account" class="view"><div class="wrap" style="padding:30px 0;max-width:850px"><div class="card"><h2>👤 My Account</h2><p>Welcome, <b id="customerName"></b></p>
+<div class="grid3" style="margin-bottom:18px"><div class="stat"><b id="myToken">—</b><span>Token</span></div><div class="stat"><b id="myAhead">—</b><span>Ahead</span></div><div class="stat"><b id="myWait">0</b><span>Est. Wait</span></div></div><div id="currentOrder"></div></div>
+<div class="card"><h2>📋 Order History</h2><div id="orderHistory"></div></div></div></section>
+
+<section id="manager" class="view"><div class="wrap" style="padding:30px 0"><h2>👨‍💼 Manager Dashboard</h2>
+<div class="grid3"><div class="stat"><b id="mQ">0</b><span>In Queue</span></div><div class="stat"><b id="mW">0</b><span>Predicted Wait</span></div><div class="stat"><b id="mS">0</b><span>Served</span></div><div class="stat"><b id="mR">₹0</b><span>Revenue</span></div><div class="stat"><b id="mO">0</b><span>Orders</span></div><div class="stat"><b id="mT">3</b><span>Min / Person</span></div></div>
+<div class="card" style="margin-top:18px"><h3>Queue Controls</h3><label>Service time per person (min)</label><input id="serviceInput" type="number" min="1" max="30" value="3">
+<button class="btn" onclick="setService()">Update</button> <button class="btn secondary" onclick="addWalkIn()">+ Walk-in</button> <button class="btn secondary" onclick="serveNext()">Serve Next</button> <button class="btn danger" onclick="clearQueue()">Clear Queue</button></div>
+<div class="card"><h3>Current Queue</h3><div id="mList"></div></div></div></section>
+
+<section id="analysis" class="view"><div class="wrap" style="padding:30px 0">
+<div class="an-head"><div><h2>📊 Smart Queue Analysis</h2><p class="muted">Historical queue patterns, live queue conditions and predicted waiting time.</p></div><div class="range" id="rng"></div></div>
+<div class="subnav" id="sub"></div><div id="anEmpty" class="card center" style="display:none"><p class="muted">No queue data in this period. Try a longer range.</p></div><div id="anBody"></div></div></section>
+
+<div id="payment"><div class="pbox">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2>💳 Payment</h2><button onclick="closePayment()">✕</button></div>
+<div class="row" style="margin-top:12px"><b>Amount</b><b id="payAmt">₹0</b></div>
+<div id="payMain"><div class="popt"><button id="onB" onclick="payMode('online')">📱 UPI / QR</button><button id="caB" onclick="payMode('cash')">💵 Cash</button></div>
+<div id="qrBox"><p class="muted" style="margin-bottom:10px">Scan with any UPI app (GPay, PhonePe, Paytm)</p><div id="qrImg"></div>
+<p class="muted" style="font-size:12px;margin:8px 0">Pay to: <b id="upiShow"></b></p><button class="btn" id="paidBtn" style="width:100%" onclick="verifyPay()">I have paid</button></div>
+<div id="cashBox" style="display:none" class="card"><h3>💵 Cash on Delivery</h3><p>Your order is booked now. Pay <b id="cashAmt"></b> in cash when you collect it.</p><button class="btn" style="width:100%;margin-top:12px" onclick="finishOrder('cash')">Confirm Order</button></div></div>
+<div class="paid" id="paidBox"><div class="tick">✓</div><h2 style="color:#16a34a">Payment Successful</h2><p class="muted">You are paid. Placing your order…</p><p id="txnShow" class="muted" style="font-size:12px"></p></div>
+</div></div>
+
+<button id="aiButton" onclick="toggleAI()" aria-label="Chat">💬</button>
+<div id="aiWindow"><div class="ai-h">💬 Vishnu Force<span onclick="toggleAI()">×</span></div>
+<div id="messages"></div>
+<div class="quick"><button onclick="quickAsk('need','How much time do I need?')">⏱ Time needed</button><button onclick="quickAsk('wait','Current waiting time?')">⏳ Waiting</button><button onclick="quickAsk('queue','People in queue?')">👥 Queue</button><button onclick="quickAsk('mine','My order status?')">🎫 My order</button><button onclick="quickAsk('pay','Payment options?')">💳 Payment</button><button onclick="quickAsk('menu','Menu and prices?')">🍴 Menu</button><button onclick="quickAsk('q','How many queues and people?')">📋 Summary</button><button onclick="quickAsk('m','Minimum waiting time?')">⚡ Minimum</button><button onclick="quickAsk('t','What is the time?')">🕒 Time</button></div>
+<div class="ai-in"><input id="aiInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendAI()"><button class="btn" id="sendBtn" onclick="sendAI()">Send</button></div></div>
+<footer>☕ GIST CAFE • SmartQueue • © 2026<br><small>Developed by Vishnu • Habibunnisa • Maha</small></footer>
+
+<script>
+/* ===== SETTINGS ===== */
+const GEMINI_API_KEY = "AQ.Ab8RN6LKtaHUxlgznEeH7QM_CaxrAHMvywtCTn-dAklNgIOIWQ";   // create at aistudio.google.com
+const GEMINI_MODELS = ["gemini-flash-latest","gemini-3.8-flash","gemini-3.5-flash","gemini-3.4-flash"];
+const UPI_ID = "gistcafe@upi";                            // change to your real UPI ID
+
+const DB={queue:[],serviceTime:3,served:0,revenue:0,orders:[],next:1,users:[{username:"Vishnu",password:"1234",name:"Vishnu"},{username:"Hubi",password:"1234",name:"Hubi"}],history:[],seeded:false};
+const ITEMS="Food|Tea|15|🍵;Food|Coffee|20|☕;Food|Samosa|15|🥟;Food|Veg Puff|25|🥐;Food|Sandwich|40|🥪;Food|Cool Drink|30|🥤;Food|Water Bottle|20|💧;Food|Biscuits|10|🍪;Food|Chips|20|🥔;Food|Chocolate|25|🍫;Food|Ice Cream|30|🍦;Food|Juice|35|🧃;Food|Burger|50|🍔;Food|Noodles|45|🍜;Food|Fried Rice|60|🍚;Writing|Notebook|40|📓;Writing|Long Notebook|60|📒;Writing|Blue Pen|10|🖊️;Writing|Black Pen|10|🖋️;Writing|Red Pen|10|🖊️;Writing|Gel Pen|20|✒️;Writing|Pen Pack (5)|50|🖊️;Writing|Fountain Pen|80|🖋️;Writing|HB Pencil|5|✏️;Writing|2B Pencil|8|✏️;Writing|Mechanical Pencil|35|✏️;Writing|Pencil Lead|15|✏️;Writing|Marker Pen|30|🖍️;Writing|Highlighter|25|🖌️;Writing|Record Book|90|📕;Writing|Diary|70|📔;Writing|Sticky Notes|30|🗒️;Tools|Eraser|5|🧽;Tools|Erase Pen|30|🩹;Tools|Sharpener|5|📐;Tools|Scale 30cm|15|📏;Tools|Geometry Box|90|🧰;Tools|Stencils|25|🔷;Tools|Compass|40|🧭;Tools|Protractor|15|📐;Tools|Set Square|20|📐;Tools|Glue Stick|20|🧴;Tools|Scissors|30|✂️;Tools|Stapler|60|📎;Tools|Paper Clips|10|📎;Tools|Correction Tape|35|🩹;Tools|Calculator|250|🧮;Art|Drawing Sheets|10|🖼️;Art|Chart Paper|15|🗞️;Art|Sketch Pens|60|🎨;Art|Colour Pencils|70|🌈;Art|Crayons|50|🖍️;Art|Water Colours|90|🎨;Art|Paint Brush|25|🖌️;Art|Sketch Book|80|📒;Art|Oil Pastels|85|🎨;Art|Graph Sheets|5|📈;Art|Drawing Board|150|📋".split(";").map((x,i)=>{const [c,name,price,icon]=x.split("|");return{id:i+1,c,name,price:+price,icon}});
+let cart=[],user=null,mode="customer",pay="online",cat="All",sending=false;
+
+const save=()=>{try{localStorage.setItem("gistSmartQueueDB",JSON.stringify(DB))}catch(e){}};
+(function(){try{const d=JSON.parse(localStorage.getItem("gistSmartQueueDB")||"null");if(d)Object.assign(DB,d)}catch(e){}
+ [["Vishnu","1234","Vishnu"],["Hubi","1234","Hubi"]].forEach(([u,p,n])=>{const f=DB.users.find(x=>x.username.toLowerCase()===u.toLowerCase());if(f){f.username=u;f.password=p;f.name=n}else DB.users.push({username:u,password:p,name:n})});save()})();
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+let tt;function toast(m){const b=$("toast");b.textContent=m;b.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>b.classList.remove("show"),2400)}
+
+function showPage(){const id=location.hash.substring(1)||"home";document.querySelectorAll(".view").forEach(s=>s.style.display="none");
+ ($(id)||$("home")).style.display="block";document.querySelectorAll("nav a").forEach(a=>a.classList.remove("on"));const l=$(id+"Link");if(l)l.classList.add("on");authUI();refresh();if(id==="analysis")renderAnalysis(true)}
+window.addEventListener("hashchange",showPage);
+
+function setMode(m){mode=m;$("loginError").textContent="";$("nameBox").style.display=m==="register"?"block":"none";
+ $("loginTitle").textContent=m==="register"?"Create Account":m==="manager"?"Manager Login":"Customer Login";
+ ["customer","manager","register"].forEach(k=>$(k+"Tab").className=(mode===k?"btn small":"btn secondary small"))}
+function loginAction(){const u=$("username").value.trim(),p=$("password").value,e=$("loginError");e.textContent="";
+ if(!u||!p){e.textContent="Enter username and password.";return}
+ if(mode==="manager"){if(["gist manger","gist manager"].includes(u.toLowerCase())&&p==="gist 123"){user={username:"manager",name:"Cafe Manager",role:"manager"};location.hash="manager";authUI();toast("Welcome, Manager");return}e.textContent="Invalid manager credentials.";return}
+ if(mode==="register"){const n=$("displayName").value.trim();if(!n){e.textContent="Enter your full name.";return}
+  if(DB.users.some(x=>x.username.toLowerCase()===u.toLowerCase())){e.textContent="Username already exists.";return}
+  DB.users.push({username:u,password:p,name:n});save();toast("Account created!");setMode("customer");return}
+ const f=DB.users.find(x=>x.username===u&&x.password===p);if(!f){e.textContent="Invalid username or password.";return}
+ user={username:f.username,name:f.name,role:"customer"};toast("Welcome "+f.name+"!");location.hash="items";authUI()}
+function authUI(){const a=$("authBox"),m=$("managerLink");
+ if(!user){a.innerHTML='<a href="#login" class="btn small">Login</a>';m.style.display="none";return}
+ if(user.role==="manager"){a.innerHTML='<button class="btn small" onclick="logout()">Logout</button>';m.style.display="block"}
+ else{a.innerHTML='<a href="#account" class="btn small">My Account</a> <button class="btn secondary small" onclick="logout()">Logout</button>';m.style.display="none"}}
+function logout(){user=null;toast("Logged out.");location.hash="home";authUI()}
+
+function renderProducts(){const cats=["All",...new Set(ITEMS.map(i=>i.c))];
+ $("cats").innerHTML=cats.map(c=>`<button class="btn ${c===cat?"":"secondary"} small" onclick="cat='${c}';renderProducts()">${c}</button>`).join("");
+ $("products").innerHTML=ITEMS.filter(i=>cat==="All"||i.c===cat).map(i=>`<div class="product"><div class="icon">${i.icon}</div><div class="body"><h3>${esc(i.name)}</h3><div class="price">₹${i.price}</div><button class="btn small" onclick="addToCart(${i.id})">Add to Cart</button></div></div>`).join("")}
+function addToCart(id){if(!user){toast("Please login first.");location.hash="login";return}if(user.role!=="customer"){toast("Use a customer account.");return}
+ const it=ITEMS.find(i=>i.id===id),e=cart.find(c=>c.id===id);e?e.qty++:cart.push({...it,qty:1});renderCart();toast(it.name+" added")}
+const total=()=>cart.reduce((s,i)=>s+i.price*i.qty,0);
+function renderCart(){$("cart").innerHTML=cart.length?cart.map(i=>`<div class="row"><div><b>${esc(i.name)}</b><br><small>₹${i.price} × ${i.qty}</small></div><div><b>₹${i.price*i.qty}</b> <button class="btn danger small" onclick="cart=cart.filter(x=>x.id!==${i.id});renderCart()">Remove</button></div></div>`).join(""):'<p class="muted">Your cart is empty.</p>';$("cartTotal").textContent="₹"+total()}
+function clearCart(){cart=[];renderCart();toast("Cart cleared.")}
+
+/* ===== PAYMENT ===== */
+function checkout(){if(!user){toast("Please login first.");location.hash="login";return}if(user.role!=="customer"){toast("Manager cannot order.");return}if(!cart.length){toast("Add items first.");return}
+ $("payAmt").textContent="₹"+total();$("cashAmt").textContent="₹"+total();$("payMain").style.display="block";$("paidBox").style.display="none";$("paidBtn").disabled=false;$("paidBtn").textContent="I have paid";$("payment").style.display="flex";payMode("online")}
+function payMode(m){pay=m;const on=m==="online";$("qrBox").style.display=on?"block":"none";$("cashBox").style.display=on?"none":"block";
+ $("onB").classList.toggle("active",on);$("caB").classList.toggle("active",!on);
+ if(on){$("upiShow").textContent=UPI_ID;const link=`upi://pay?pa=${UPI_ID}&pn=GIST%20CAFE&am=${total()}&cu=INR&tn=GIST%20Cafe%20Order`;
+  try{const q=qrcode(0,"M");q.addData(link);q.make();$("qrImg").innerHTML=q.createSvgTag(5,0)}catch(e){$("qrImg").innerHTML='<p class="muted">QR unavailable offline. Pay to '+UPI_ID+'</p>'}}}
+function verifyPay(){const b=$("paidBtn");if(b.disabled)return;b.disabled=true;b.textContent="Verifying payment…";lastTxn="GC"+Date.now().toString(36).toUpperCase();setTimeout(()=>{$("txnShow").textContent="Transaction ID: "+lastTxn;$("payMain").style.display="none";$("paidBox").style.display="block";setTimeout(()=>finishOrder("online"),1800)},1800)}
+function closePayment(){$("payment").style.display="none"}
+let placing=false,lastTxn="";function finishOrder(method){if(placing||!cart.length)return;placing=true;const amount=total(),token=DB.next++;
+ const o={id:Date.now(),username:user.username,name:user.name,items:cart.map(i=>({name:i.name,qty:i.qty,price:i.price})),amount,payment:method,txn:method==="online"?lastTxn:"",token,status:"Waiting",created:new Date().toLocaleString()};
+ DB.orders.push(o);DB.queue.push({token,username:user.username,name:user.name,orderId:o.id,status:"Waiting"});DB.revenue+=amount;save();addHistoricalQueuePoint();
+ cart=[];renderCart();closePayment();toast("Order confirmed! Token #"+token);location.hash="account";placing=false;refresh()}
+
+/* ===== QUEUE & PREDICTION ===== */
+const conf=()=>DB.history.length>=10?91:DB.history.length>=5?85:78;
+function histWait(n){const h=DB.history.filter(x=>x.queue>0&&Math.abs(x.queue-n)<=3);return h.length?Math.round(h.reduce((a,x)=>a+x.actual/x.service,0)/h.length*DB.serviceTime):n*DB.serviceTime}
+function predictWaitingTime(n){if(n<=0)return{basic:0,historical:0,predicted:0,confidence:conf()};const b=n*DB.serviceTime,h=histWait(n);return{basic:b,historical:h,predicted:Math.round(b*.6+h*.4),confidence:conf()}}
+function calc(){const n=DB.queue.length,p=predictWaitingTime(n);return{n,w:p.predicted,basic:p.basic,historical:p.historical,confidence:p.confidence,s:p.predicted>=20?"LONG WAIT":p.predicted>=10?"MEDIUM WAIT":"SHORT WAIT"}}
+function refresh(){const r=calc();
+ $("homeWait").textContent=r.w;$("homeQueue").textContent=r.n;$("homeService").textContent=DB.serviceTime;$("homeConf").textContent=r.confidence+"%";$("homeStatus").textContent=r.s;
+ $("homeRange").textContent=r.w?`Estimated range: ${Math.max(1,r.w-2)}–${r.w+2} minutes`:"No waiting customers";
+ $("mQ").textContent=r.n;$("mW").textContent=r.w+" min";$("mS").textContent=DB.served;$("mR").textContent="₹"+DB.revenue;$("mO").textContent=DB.orders.length;$("mT").textContent=DB.serviceTime;
+ if(document.activeElement!==$("serviceInput"))$("serviceInput").value=DB.serviceTime;
+ $("mList").innerHTML=DB.queue.length?DB.queue.map((q,i)=>`<div class="row"><div><b>Token #${q.token}</b><br><small>${esc(q.name)}</small></div><b>${predictWaitingTime(i).predicted} min</b></div>`).join(""):'<p class="muted">Queue is empty.</p>';
+ if(user&&user.role==="customer"){$("customerName").textContent=user.name;const i=DB.queue.findIndex(q=>q.username===user.username);
+  if(i<0){$("myToken").textContent="—";$("myAhead").textContent="—";$("myWait").textContent="0";$("currentOrder").innerHTML='<p class="muted">No active order.</p>'}
+  else{const q=DB.queue[i],p=predictWaitingTime(i);$("myToken").textContent="#"+q.token;$("myAhead").textContent=i;$("myWait").textContent=p.predicted+" min";
+   $("currentOrder").innerHTML=`<div class="card" style="background:#eef8fb"><h3>🎫 Token #${q.token}</h3><p>Status: <b>${q.status}</b></p><p>People ahead: <b>${i}</b></p><p>Estimated wait: <b>${p.predicted} minutes</b></p></div>`}
+  const h=DB.orders.filter(o=>o.username===user.username);
+  $("orderHistory").innerHTML=h.length?h.slice().reverse().map(o=>`<div class="row"><div><b>Token #${o.token}</b><br><small>${o.created}</small><br><small>${o.payment==="cash"?"Cash":"✅ Paid via UPI · "+(o.txn||"")}</small></div><b>₹${o.amount}</b></div>`).join(""):'<p class="muted">No orders yet.</p>'}}
+function addHistoricalQueuePoint(){const now=new Date(),qb=Math.max(0,DB.queue.length-1);
+ DB.history.push({id:Date.now(),date:now.toLocaleDateString(),time:now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),timestamp:now.getTime(),queue:qb,service:DB.serviceTime,actual:Math.max(1,qb*DB.serviceTime+Math.round(Math.random()*4-2))});
+ if(DB.history.length>600)DB.history.shift();save()}
+function seedQueueHistory(){if(DB.seeded||DB.history.length){DB.seeded=true;return}
+ const P=[[2,3,7],[4,3,13],[6,3,19],[8,3,24],[10,3,31],[12,3,37],[15,4,58],[18,4,69],[5,3,16],[7,3,21],[9,3,28],[11,3,34],[14,4,53],[16,4,63]],out=[];
+ for(let d=29;d>=0;d--)P.forEach((p,h)=>{const dt=new Date();dt.setHours(0,0,0,0);dt.setDate(dt.getDate()-d);dt.setHours(8+Math.floor(h/P.length*10),(h*7)%60);const k=P[(h+d)%P.length];
+  out.push({id:dt.getTime()+h,date:dt.toLocaleDateString(),time:dt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),timestamp:dt.getTime(),queue:k[0],service:k[1],actual:Math.max(1,k[2]+Math.round(Math.random()*4-2))})});
+ DB.history=out;DB.seeded=true;save()}
+function setService(){const v=Number($("serviceInput").value);if(!v||v<1||v>30){toast("Enter 1 to 30.");return}DB.serviceTime=v;save();addHistoricalQueuePoint();refresh();toast("Service time updated.")}
+function addWalkIn(){const t=DB.next++;DB.queue.push({token:t,username:"walkin_"+t,name:"Walk-in Customer",orderId:null,status:"Waiting"});save();addHistoricalQueuePoint();refresh();toast("Walk-in token #"+t)}
+function serveNext(){if(!DB.queue.length){toast("Queue is empty.");return}const x=DB.queue.shift();DB.served++;DB.orders.forEach(o=>{if(o.id===x.orderId)o.status="Served"});save();addHistoricalQueuePoint();refresh();toast("Token #"+x.token+" served.")}
+function clearQueue(){if(!DB.queue.length){toast("Queue is empty.");return}if(!confirm("Clear the complete queue?"))return;DB.queue=[];save();addHistoricalQueuePoint();refresh()}
+
+/* ===== ANSWERS (used by both chats, no API needed) ===== */
+function localAnswer(q){const t=q.toLowerCase(),r=calc(),s=DB.serviceTime,A=queueAnalytics(0),n=r.n;
+ const N=t.match(/(\d+)\s*(people|persons|person|pods|pod|members|customers)/);
+ if(/^(hi|hello|hey)\b/.test(t))return"Hello! 👋 Ask me about the **queue**, **waiting time**, **minimum wait**, **time**, **peak hours**, **menu** or **payment**.";
+ if(/problem statement|about (this|the) (project|website|site)|what is (this|smartqueue)|purpose|objective/.test(t))return"**GIST SmartQueue AI** predicts waiting time in college offices, laboratories, cafeterias or service counters using **queue size**, **historical patterns** and **estimated service time**.\n- Basic wait = people in queue × service time\n- The AI blends this with historical data from similar queues";
+ if(N&&/if|what|predict|wait|will/.test(t)){const k=+N[1],p=predictWaitingTime(k);return`With **${k} people** in the queue and ${s} min per person, the predicted wait is about **${p.predicted} minutes**.\n- Basic: ${p.basic} min\n- Historical: ${p.historical} min`}
+ if(/how many (queues|lines|counters)|number of (queues|counters)|queues (are|is) there/.test(t))return`GIST Cafe runs **1 live queue** (one service counter, first-come first-served by token).\n- People in it now: **${n}**\n- Served so far: **${DB.served}**`;
+ if(/what('?s| is)?( the)?( current)? (time|date)|current time|time now|time is it/.test(t))return`It is **${new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}** on ${new Date().toLocaleDateString()}.\n- Current predicted waiting time: **${r.w} min** (${n} in queue)`;
+ if(/minimum|least|shortest|fastest|lowest|best time/.test(t))return`**Minimum waiting time**\n- Right now: **${r.w} min**\n- Best case (empty queue): **0 min** wait, then ${s} min service\n- Shortest recorded: **${A?A.minWait:"n/a"} min**`;
+ if(/maximum|longest|worst|highest/.test(t))return`**Maximum waiting time**\n- Longest recorded: **${A?A.maxWait:"n/a"} min**\n- Largest recorded queue: **${A?A.maxQueue:"n/a"} people**\n- Right now: ${r.w} min`;
+ if(/average|avg|usual|typical/.test(t))return A?`**Averages (history)**\n- Wait: **${A.avgActual} min**\n- Queue size: **${A.avgQueue} people**\n- Service time: **${A.avgService} min/person**`:"No history yet.";
+ if(/how many (people|pods|pod|persons|customers|members)|people (in|waiting)|in (the )?queue|queue (size|length)|crowd|how busy/.test(t))return n?`There are **${n} people** in the queue right now.\n- Predicted wait: ${r.w} min`:"The queue is **empty**. You will be served right away!";
+ if(/my (order|token|status)|order status|people ahead/.test(t)){if(!user||user.role!=="customer")return"Please **login** as a customer first.";const i=DB.queue.findIndex(x=>x.username===user.username);if(i<0)return"You have no active order.";return`**Token #${DB.queue[i].token}**\n- People ahead: ${i}\n- Estimated wait: ${predictWaitingTime(i).predicted} min`}
+ if(/service time|per person/.test(t))return`Service time is **${s} minutes per person**, set by the manager.`;
+ if(/served|orders|revenue|token/.test(t))return`- Orders placed: **${DB.orders.length}**\n- Customers served: **${DB.served}**\n- Revenue: **₹${DB.revenue}**\n- Next token: **#${DB.next}**`;
+ if(/how (does|do).*(predict|work)|logic|formula|calculate/.test(t))return`**How the prediction works**\n1. Basic wait = queue size × service time (${n} × ${s} = ${r.basic} min)\n2. Historical estimate from similar past queues (${r.historical} min)\n3. Final = 60% basic + 40% historical = **${r.w} min**`;
+ if(/accura|error|confidence/.test(t))return A?`Prediction confidence is **${r.confidence}%** (based on ${DB.history.length} records).\n- Mean absolute error of the basic formula: **${A.mae} min**`:"Not enough history yet.";
+ if(/peak|busiest|rush|busy time/.test(t))return A?`The busiest period is around **${hl(A.peakHour)}**.\n- Average queue then: ${A.byHour[A.peakHour].queue} people\n- Average wait: ${A.byHour[A.peakHour].wait} min`:"Not enough history yet.";
+ if(/trend|history|historical|pattern/.test(t)){if(!A)return"Not enough history yet.";const d=A.daily,a=d[0].queue,b=d[d.length-1].queue;return`**Queue trend:** ${b>a?"increasing":b<a?"decreasing":"stable"}\n- Records: ${A.total}\n- Avg queue: ${A.avgQueue}, avg wait: ${A.avgActual} min`}
+ if(/reduce|advice|improve|suggest/.test(t))return"**Ways to reduce waiting**\n- Add a second counter at peak hours\n- Prepare popular items in advance\n- Lower service time per person\n- Use the peak-hour chart to plan staff";
+ if(/pay|payment|upi|qr|cash/.test(t))return"You can pay in two ways:\n- **UPI QR:** scan the QR code and confirm\n- **Cash:** pay when you collect your order";
+ if(/menu|price|item|cost|available/.test(t))return"**Menu and prices**\n"+ITEMS.map(i=>`- ${i.name}: ₹${i.price}`).join("\n");
+ if(/how much time|time do i need|wait|how long|ready|prediction|predict/.test(t))return`**Predicted waiting time:** about **${r.w} minutes** (${r.s}).\n- People in queue: ${n}\n- Service time: ${s} min/person\n- If you order now: ready in about **${r.w+s} min**`;
+ return null}
+function summaryText(){const r=calc();return`Right now: **${DB.queue.length} people** in **1 queue**, predicted wait **${r.w} min**, service time ${DB.serviceTime} min/person.`}
+
+/* ===== VISHNU FORCE CHAT ===== */
+function toggleAI(){const w=$("aiWindow");w.classList.toggle("open");if(w.classList.contains("open")&&!$("messages").children.length)addMsg("Hi! I am **Vishnu Force** ☕. Ask me about the queue, waiting time, minimum time, menu or payments.",false)}
+function quickAsk(k,l){addMsg(l,true);addMsg(localAnswer(l)||summaryText(),false)}
+const CONTEXT=()=>`You are Vishnu Force, assistant of GIST CAFE SmartQueue AI. The project predicts waiting time in college offices, labs, cafeterias or service counters using queue size, historical patterns and estimated service time. Live data: ${DB.queue.length} people in 1 queue, service ${DB.serviceTime} min/person, predicted wait ${calc().w} min, orders ${DB.orders.length}, served ${DB.served}. Menu: ${ITEMS.map(i=>i.name+" ₹"+i.price).join(", ")}. Answer concisely in Markdown. Do not invent facts.`;
+async function sendAI(){if(sending)return;const inp=$("aiInput"),q=inp.value.trim();if(!q)return;inp.value="";addMsg(q,true);
+ const la=localAnswer(q);if(la){addMsg(la,false);return}
+ sending=true;$("sendBtn").disabled=true;const th=document.createElement("div");th.className="message";th.textContent="Thinking...";$("messages").appendChild(th);
+ try{const a=await gemini(CONTEXT()+"\nQuestion: "+q);th.remove();addMsg(a,false)}
+ catch(e){th.remove();console.error(e);addMsg("I could not reach Gemini right now ("+e.message+").\n\n"+summaryText()+"\n\nI can still answer questions about **queue size**, **waiting time**, **minimum/maximum wait**, **time**, **peak hours**, **menu** and **payment**.",false)}
+ finally{sending=false;$("sendBtn").disabled=false}}
+let goodModel=null;
+async function gemini(prompt){const list=goodModel?[goodModel]:GEMINI_MODELS;let last="AI service unavailable";
+ for(const m of list){for(const think of(/gemini-3/.test(m)?[true,false]:[false])){const c=new AbortController(),tm=setTimeout(()=>c.abort(),20000);
+  try{const cfg={maxOutputTokens:900,temperature:.6};if(think)cfg.thinkingConfig={thinkingLevel:"minimal"};
+   const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+m+":generateContent",{method:"POST",signal:c.signal,headers:{"Content-Type":"application/json","x-goog-api-key":GEMINI_API_KEY},body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:cfg})});
+   clearTimeout(tm);const d=await r.json();if(!r.ok){const e=new Error(d?.error?.message||"HTTP "+r.status);e.code=r.status;throw e}
+   const a=d?.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("").trim();if(a){goodModel=m;return a}throw new Error("Empty response")}
+  catch(e){clearTimeout(tm);last=e.name==="AbortError"?"Request timed out":e.message;if(e.code===401||e.code===403)throw new Error("API key problem: "+last)}}}
+ goodModel=null;throw new Error(last.slice(0,140))}
+function addMsg(t,u){const d=document.createElement("div");d.className="message"+(u?" user":"");if(u)d.textContent=t;else d.innerHTML=fmt(t);$("messages").appendChild(d);$("messages").scrollTop=1e9}
+function fmt(t){let s=esc(t).replace(/```(?:\w+)?\n?([\s\S]*?)```/g,"<pre>$1</pre>").replace(/\*\*(.*?)\*\*/g,"<b>$1</b>");let h="",l=false;
+ s.split("\n").forEach(x=>{const y=x.trim();if(!y){if(l){h+="</ul>";l=false}return}
+  if(/^[-*] /.test(y)){if(!l){h+="<ul>";l=true}h+="<li>"+y.slice(2)+"</li>"}else{if(l){h+="</ul>";l=false}h+=y.includes("<pre>")||y.includes("</pre>")?x+"\n":"<p>"+y+"</p>"}});
+ return h+(l?"</ul>":"")}
+
+
+/* ===== QUEUE ANALYSIS ===== */
+const DAY=864e5,hl=h=>(h%12||12)+(h<12?"am":"pm");
+const TABS=[["overview","🏠 Overview","#1687c9"],["trends","📈 Queue Trends","#16a34a"],["history","🗂 Historical Data","#ec4899"],["prediction","🤖 Prediction","#8b5cf6"],["ask","💬 Ask AI","#0ea5e9"]];
+const QQ=[["⏱ Prediction","Predict waiting time"],["👥 People","How many people in queue?"],["📋 Queues","How many queues?"],["⚡ Minimum","Minimum waiting time?"],["🐢 Maximum","Maximum waiting time?"],["🕒 Time","What is the time?"],["⏰ Peak","When is the busiest time?"],["📊 Accuracy","How accurate is the prediction?"],["💡 Advice","How can we reduce waiting?"]];
+let anR=30,anTab="overview",anSig="",anMsgs=[["Hi! Ask me about waiting time, queue size, minimum or maximum wait, time, peak hours, history or prediction.",0]];
+function queueAnalytics(rng=anR){const all=DB.history.slice().sort((a,b)=>a.timestamp-b.timestamp);if(!all.length)return null;
+ const d0=new Date();d0.setHours(0,0,0,0);const end=d0.getTime()+DAY,start=rng?end-rng*DAY:0,rec=all.filter(x=>x.timestamp>=start&&x.timestamp<end);if(!rec.length)return null;
+ const R=Math.round,sum=(a,f)=>a.reduce((s,x)=>s+f(x),0),avg=f=>sum(rec,f)/rec.length;
+ const byHour=Array.from({length:24},(_,h)=>{const a=rec.filter(x=>new Date(x.timestamp).getHours()===h);return{queue:a.length?R(sum(a,x=>x.queue)/a.length):0,wait:a.length?R(sum(a,x=>x.actual)/a.length):0}});
+ const dm={};rec.forEach(x=>(dm[x.date]=dm[x.date]||[]).push(x));
+ const daily=Object.values(dm).map(v=>({label:new Date(v[0].timestamp).toLocaleDateString(undefined,{day:"2-digit",month:"short"}),queue:R(sum(v,x=>x.queue)/v.length),wait:R(sum(v,x=>x.actual)/v.length)}));
+ const waits=rec.map(x=>x.actual);
+ return{rec,total:rec.length,avgQueue:R(avg(x=>x.queue)),avgService:Math.round(avg(x=>x.service)*10)/10,avgActual:R(avg(x=>x.actual)),mae:Math.round(avg(x=>Math.abs(x.actual-x.queue*x.service))*10)/10,byHour,peakHour:byHour.reduce((b,x,h)=>x.queue>byHour[b].queue?h:b,0),daily,minWait:Math.min(...waits),maxWait:Math.max(...waits),maxQueue:Math.max(...rec.map(x=>x.queue))}}
+function setR(r){anR=r;renderAnalysis(true)}function setTab(t){anTab=t;renderAnalysis(true)}
+function renderAnalysis(force){const sig=[DB.history.length,DB.queue.length,DB.serviceTime,anR,anTab].join();if(!force&&sig===anSig)return;anSig=sig;
+ $("rng").innerHTML=[[7,"7D"],[14,"14D"],[30,"30D"],[0,"All"]].map(([r,l])=>`<button class="${r===anR?"on":""}" onclick="setR(${r})">${l}</button>`).join("");
+ $("sub").innerHTML=TABS.map(([k,l,c])=>`<button class="${k===anTab?"on":""}" style="${k===anTab?"background:"+c:""}" onclick="setTab('${k}')">${l}</button>`).join("");
+ const A=queueAnalytics();$("anEmpty").style.display=A?"none":"block";if(!A){$("anBody").innerHTML="";return}
+ $("anBody").innerHTML=({overview:vOver,trends:vTrend,history:vHist,prediction:vPred,ask:vAsk})[anTab](A)}
+const bars=(v,l,pk)=>{const m=Math.max(...v,1),C=["#1687c9","#16a34a","#f59e0b","#8b5cf6","#ec4899","#0ea5e9"];return`<div class="bars">`+v.map((x,i)=>`<div><i style="height:${Math.max(4,x/m*120)}px;background:${i===pk?"#f59e0b":C[i%6]}"></i>${x}<br>${l[i]}</div>`).join("")+`</div>`};
+function vOver(A){const P=predictWaitingTime(DB.queue.length),c=calc(),cls=c.s==="LONG WAIT"?"statusLong":c.s==="MEDIUM WAIT"?"statusMedium":"statusShort",n=DB.queue.length;
+ const K=[["👥 Current Queue",n,"people waiting","#1687c9,#20b8c9"],["⏱ Basic Wait",P.basic+" min","queue × service time","#16a34a,#4ade80"],["📚 Historical Avg",P.historical+" min","similar queue sizes","#f59e0b,#fbbf24"],["🤖 AI Prediction",P.predicted+" min",P.confidence+"% confidence","#8b5cf6,#c084fc"]];
+ const I=[["#1687c9","#eef8fb",`👥 <b>${n}</b> people are waiting now in 1 queue.`],["#16a34a","#f0fdf4",`⏱ Recorded wait: average <b>${A.avgActual} min</b>, minimum <b>${A.minWait}</b>, maximum <b>${A.maxWait}</b>.`],["#f59e0b","#fffbeb",`📊 Average queue <b>${A.avgQueue}</b> people, largest <b>${A.maxQueue}</b>.`],["#8b5cf6","#f5f3ff",`⏰ Busiest period: <b>${hl(A.peakHour)}</b>.`]];
+ return`<div class="queueHero"><div class="prediction"><small>LIVE AI PREDICTION</small><div class="number">${P.predicted}</div><div>minutes estimated waiting time</div><div class="confidence">Confidence: <b>${P.confidence}%</b></div><div style="margin-top:12px"><span class="pill ${cls}">${c.s}</span></div></div>
+<div class="card"><h3>📌 Current Queue Inputs</h3><div class="grid3" style="margin-bottom:10px"><div class="analysisMetric"><span>Queue</span><b>${n}</b><small>people</small></div><div class="analysisMetric"><span>Service</span><b>${DB.serviceTime}</b><small>min/person</small></div><div class="analysisMetric"><span>Basic</span><b>${P.basic}</b><small>minutes</small></div></div>
+<div class="explain"><b>How it works</b><p style="margin-top:6px">Basic wait = queue size × service time. It is blended with the historical wait of similar queues to give a more realistic estimate.</p></div></div></div>
+<div class="kg">${K.map(k=>`<div class="kpi" style="background:linear-gradient(135deg,${k[3]})"><span>${k[0]}</span><b>${k[1]}</b><em>${k[2]}</em></div>`).join("")}</div>
+<div class="card"><h3>💡 Smart Queue Insights</h3><div class="ins-grid">${I.map(x=>`<div class="ins" style="border-color:${x[0]};background:${x[1]}">${x[2]}</div>`).join("")}</div></div>
+<div class="card"><h3>🎯 Problem Statement</h3><div class="explain"><b>Predict waiting time in college offices, laboratories, cafeterias, or service counters using queue size, historical patterns, and service time.</b></div></div>`}
+function scatter(A){const W=700,H=280,P=45,mx=Math.max(...A.rec.map(x=>x.queue),1),my=Math.max(...A.rec.map(x=>x.actual),1);let g="",c="";
+ for(let i=0;i<=4;i++){const y=H-P-i/4*(H-2*P);g+=`<line x1="${P}" x2="${W-P}" y1="${y}" y2="${y}" stroke="#e2eef4"/><text x="${P-7}" y="${y+4}" font-size="10" fill="#64748b" text-anchor="end">${Math.round(my*i/4)}</text>`}
+ A.rec.slice(-80).forEach(x=>{c+=`<circle cx="${P+x.queue/mx*(W-2*P)}" cy="${H-P-x.actual/my*(H-2*P)}" r="5" fill="#1687c9" opacity=".65"/>`});
+ return`<svg viewBox="0 0 ${W} ${H}">${g}<line x1="${P}" x2="${P}" y1="${P}" y2="${H-P}" stroke="#94a3b8"/><line x1="${P}" x2="${W-P}" y1="${H-P}" y2="${H-P}" stroke="#94a3b8"/>${c}<text x="${W/2}" y="${H-5}" text-anchor="middle" font-size="11" fill="#64748b">Queue size (people)</text><text x="12" y="${H/2}" transform="rotate(-90 12 ${H/2})" text-anchor="middle" font-size="11" fill="#64748b">Waiting time (min)</text></svg>`}
+function vTrend(A){const d=A.daily.slice(-14),hs=[8,9,10,11,12,13,14,15,16,17,18,19];
+ return`<div class="two"><div class="card"><h3>👥 Average Queue Size (daily)</h3>${bars(d.map(x=>x.queue),d.map(x=>x.label.slice(0,6)),d.length-1)}</div><div class="card"><h3>⏱ Actual Waiting Time (daily)</h3>${bars(d.map(x=>x.wait),d.map(x=>x.label.slice(0,6)),d.length-1)}</div></div>
+<div class="card"><h3>📈 Queue Size vs Waiting Time</h3><div class="chartBox">${scatter(A)}</div><p class="muted" style="font-size:12px">Each dot is one recorded queue condition.</p></div>
+<div class="two"><div class="card"><h3>⏰ Hourly Queue Pattern</h3>${bars(hs.map(h=>A.byHour[h].queue),hs.map(hl),hs.indexOf(A.peakHour))}</div><div class="card"><h3>📊 Model Error</h3><div class="analysisMetric"><span>Mean absolute error</span><b>${A.mae} min</b><small>basic formula vs actual wait</small></div><div class="analysisMetric" style="margin-top:10px"><span>Average actual wait</span><b>${A.avgActual} min</b><small>${A.total} observations</small></div></div></div>`}
+function vHist(A){return`<div class="card"><div class="chead"><div><h3>🗂 Historical Queue Data</h3><p class="muted" style="font-size:12px">${A.total} observations stored on this device. New queue events are added automatically.</p></div><button class="btn small" onclick="exportQueueHistory()">⬇ Download CSV</button></div>
+<div class="tbl" style="margin-top:12px"><table><thead><tr><th>Date</th><th>Time</th><th>Queue</th><th>Service</th><th>Basic</th><th>Actual</th><th>Error</th></tr></thead><tbody>${A.rec.slice().reverse().slice(0,200).map(x=>`<tr><td>${x.date}</td><td>${x.time}</td><td>${x.queue}</td><td>${x.service} min</td><td>${x.queue*x.service} min</td><td>${x.actual} min</td><td>${Math.abs(x.actual-x.queue*x.service)} min</td></tr>`).join("")}</tbody></table></div></div>
+<div class="two"><div class="card"><h3>📊 Summary</h3><div class="analysisMetric"><span>Average queue</span><b>${A.avgQueue}</b><small>people</small></div><div class="analysisMetric" style="margin-top:10px"><span>Average service time</span><b>${A.avgService}</b><small>min/person</small></div></div><div class="card"><h3>⏱ Waiting time</h3><div class="analysisMetric"><span>Minimum / Maximum</span><b>${A.minWait} / ${A.maxWait}</b><small>minutes</small></div><div class="analysisMetric" style="margin-top:10px"><span>Average</span><b>${A.avgActual}</b><small>minutes</small></div></div></div>`}
+function exportQueueHistory(){if(!DB.history.length){toast("No historical data.");return}const rows=[["Date","Time","Queue Size","Service Time","Basic Wait","Actual Wait"]].concat(DB.history.map(x=>[x.date,x.time,x.queue,x.service,x.queue*x.service,x.actual]));
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(",")).join("\n")],{type:"text/csv"}));a.download="gist-smartqueue-history.csv";a.click()}
+function vPred(A){const P=predictWaitingTime(DB.queue.length),R=(a,b)=>`<div class="row"><span>${a}</span><b>${b}</b></div>`;
+ return`<div class="queueHero"><div class="prediction"><small>FINAL PREDICTED WAIT</small><div class="number">${P.predicted}</div><div>minutes</div><div class="confidence">Model confidence: <b>${P.confidence}%</b></div></div>
+<div class="card"><h3>Calculation</h3>${R("Current queue",DB.queue.length)}${R("Service time",DB.serviceTime+" min")}${R("Basic (queue × service)",P.basic+" min")}${R("Historical estimate",P.historical+" min")}${R("AI predicted wait",P.predicted+" min")}</div></div>
+<div class="card"><h3>🧠 Prediction Logic</h3><div class="explain"><b>1. Queue size</b> – people currently waiting.<br><b>2. Service time</b> – minutes per person set by the manager.<br><b>3. Basic wait</b> – queue × service time.<br><b>4. Historical pattern</b> – average wait of similar past queues.<br><b>5. Final</b> – 60% basic + 40% historical.</div></div>
+<div class="card"><h3>🔮 What if the queue grows?</h3>${[5,10,15,20].map(k=>R(k+" people","≈ "+predictWaitingTime(k).predicted+" min")).join("")}</div>`}
+function vAsk(A){return`<div class="card"><h3>💬 Ask SmartQueue AI</h3><div id="anMsgs" class="anm" style="margin-top:10px">${anMsgs.map(m=>`<div class="message${m[1]?" user":""}">${m[1]?esc(m[0]):fmt(m[0])}</div>`).join("")}</div><div class="quick" style="flex-wrap:wrap;border:0;padding:8px 0">${QQ.map(q=>`<button onclick="anAsk('${q[1]}')">${q[0]}</button>`).join("")}</div><div style="display:flex;gap:8px"><input id="anIn" style="margin:0" placeholder="Ask about queue, wait time, minimum time..." onkeydown="if(event.key==='Enter')anAsk()"><button class="btn" onclick="anAsk()">Ask</button></div></div>`}
+function anAdd(t,u){anMsgs.push([t,u]);const b=$("anMsgs");if(!b)return;const d=document.createElement("div");d.className="message"+(u?" user":"");if(u)d.textContent=t;else d.innerHTML=fmt(t);b.appendChild(d);b.scrollTop=1e9}
+async function anAsk(q){q=(q||$("anIn").value).trim();if(!q)return;if($("anIn"))$("anIn").value="";anAdd(q,1);const a=localAnswer(q);if(a){anAdd(a,0);return}
+ try{anAdd(await gemini(CONTEXT()+"\nQuestion: "+q),0)}catch(e){anAdd("I could not reach Gemini right now ("+e.message+").\n\n"+summaryText(),0)}}
+
+seedQueueHistory();renderProducts();renderCart();showPage();setInterval(()=>{refresh();if(location.hash==="#analysis")renderAnalysis()},3000);
+</script></body></html>
